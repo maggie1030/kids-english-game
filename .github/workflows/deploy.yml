@@ -19,39 +19,42 @@ jobs:
       run: |
         cp 英语游戏中心.html index.html
 
-    # 设置 SSH 密钥
-    - name: Setup SSH
-      uses: shimataro/ssh-key-action@v2
-      with:
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        known_hosts: unnecessary
-        config: |
-          Host server
-            HostName ${{ secrets.SSH_HOST }}
-            User ${{ secrets.SSH_USER }}
-            Port ${{ secrets.SERVER_PORT || '22' }}
-            StrictHostKeyChecking no
+    # 安装 sshpass（用于密码登录）
+    - name: Install sshpass
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y sshpass
 
-    # 创建远程目录并部署
+    # 部署到服务器（使用密码）
     - name: Deploy to Server
+      env:
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_USER: ${{ secrets.SSH_USER }}
+        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+        DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
       run: |
         echo "🚀 开始部署到香港服务器..."
 
-        # 创建目标目录（如果不存在）
-        ssh server "mkdir -p ${{ secrets.DEPLOY_PATH }}"
+        # 创建目标目录
+        sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "mkdir -p $DEPLOY_PATH"
 
         # 删除旧文件
-        ssh server "rm -rf ${{ secrets.DEPLOY_PATH }}/*"
+        sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "rm -rf $DEPLOY_PATH/*"
 
         # 上传新文件
-        scp -r ./* server:${{ secrets.DEPLOY_PATH }}/
+        sshpass -p "$SSH_PASSWORD" scp -o StrictHostKeyChecking=no -r ./* $SSH_USER@$SSH_HOST:$DEPLOY_PATH/
 
         echo "✅ 文件部署完成"
 
     # 设置文件权限
     - name: Set Permissions
+      env:
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_USER: ${{ secrets.SSH_USER }}
+        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+        DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
       run: |
-        ssh server "chmod -R 755 ${{ secrets.DEPLOY_PATH }}"
+        sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "chmod -R 755 $DEPLOY_PATH"
 
     # 清理临时文件
     - name: Cleanup
@@ -69,4 +72,4 @@ jobs:
         echo "   /var/www/"
         echo "   ├── website1/     ← 现有网站1（未改动）"
         echo "   ├── website2/     ← 现有网站2（未改动）"
-        echo "   └── ${{ secrets.DEPLOY_PATH }}/  ← 新游戏（独立）"
+        echo "   └── kids-game/    ← 新游戏（独立）"
