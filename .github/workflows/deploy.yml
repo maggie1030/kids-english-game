@@ -1,4 +1,4 @@
-name: Deploy to Tencent COS
+name: Deploy to HK Server
 
 on:
   push:
@@ -14,39 +14,44 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 设置 Node.js（如果需要构建）
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-
     # 创建 index.html（将主文件复制为入口）
     - name: Prepare index.html
       run: |
         cp 英语游戏中心.html index.html
 
-    # 安装 coscmd
-    - name: Install coscmd
-      run: |
-        pip install coscmd
+    # 设置 SSH 密钥
+    - name: Setup SSH
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        known_hosts: unnecessary
+        config: |
+          Host server
+            HostName ${{ secrets.SSH_HOST }}
+            User ${{ secrets.SSH_USER }}
+            Port ${{ secrets.SERVER_PORT || '22' }}
+            StrictHostKeyChecking no
 
-    # 配置腾讯云 COS
-    - name: Configure COS
+    # 创建远程目录并部署
+    - name: Deploy to Server
       run: |
-        coscmd config -a ${{ secrets.TENCENT_SECRET_ID }} \
-                      -s ${{ secrets.TENCENT_SECRET_KEY }} \
-                      -b ${{ secrets.TENCENT_BUCKET }} \
-                      -r ${{ secrets.TENCENT_REGION }}
+        echo "🚀 开始部署到香港服务器..."
 
-    # 删除旧文件
-    - name: Clean old files
-      run: |
-        coscmd delete -r -f / || true
+        # 创建目标目录（如果不存在）
+        ssh server "mkdir -p ${{ secrets.DEPLOY_PATH }}"
 
-    # 上传新文件到 COS
-    - name: Upload to COS
+        # 删除旧文件
+        ssh server "rm -rf ${{ secrets.DEPLOY_PATH }}/*"
+
+        # 上传新文件
+        scp -r ./* server:${{ secrets.DEPLOY_PATH }}/
+
+        echo "✅ 文件部署完成"
+
+    # 设置文件权限
+    - name: Set Permissions
       run: |
-        coscmd upload -r ./ / --ignore "./.git/*,./.github/*,./README.md,./部署指南.md,./setup.sh"
+        ssh server "chmod -R 755 ${{ secrets.DEPLOY_PATH }}"
 
     # 清理临时文件
     - name: Cleanup
@@ -57,4 +62,11 @@ jobs:
     - name: Deploy Success
       run: |
         echo "🎉 部署成功！"
-        echo "访问地址: https://${{ secrets.TENCENT_BUCKET }}.cos-website.${{ secrets.TENCENT_REGION }}.myqcloud.com"
+        echo "服务器: ${{ secrets.SSH_HOST }}"
+        echo "目录: ${{ secrets.DEPLOY_PATH }}"
+        echo ""
+        echo "📁 目录结构（与其他网站隔离）:"
+        echo "   /var/www/"
+        echo "   ├── website1/     ← 现有网站1（未改动）"
+        echo "   ├── website2/     ← 现有网站2（未改动）"
+        echo "   └── ${{ secrets.DEPLOY_PATH }}/  ← 新游戏（独立）"
