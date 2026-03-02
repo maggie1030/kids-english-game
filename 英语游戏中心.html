@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌈 儿童英语游戏中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #333;
+            transform: translateY(-2px);
+        }
+
+        .total-score {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        /* 页面区域 */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 首页样式 */
+        .home-page {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .home-title {
+            font-size: 3em;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+
+        .home-subtitle {
+            font-size: 1.3em;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 40px;
+        }
+
+        .game-cards {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            width: 280px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        }
+
+        .game-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .game-card h3 {
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .game-card p {
+            color: #666;
+            font-size: 1em;
+        }
+
+        /* 游戏1: 单词配对 */
+        .matching-game {
+            background: rgba(255,255,255,0.95);
+            border-radius: 30px;
+            padding: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .game-header h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .score-board {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .score-item {
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .score-item .label {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+
+        .score-item .value {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            height: 15px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .game-area {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .column-title {
+            text-align: center;
+            color: #667eea;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .card {
+            width: 130px;
+            height: 90px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            font-weight: bold;
+            border: 3px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        }
+
+        .card.selected {
+            border-color: #FFD700;
+            background: #fffacd;
+            transform: scale(1.05);
+        }
+
+        .card.matched {
+            background: #90EE90;
+            border-color: #32CD32;
+            animation: matchPulse 0.5s ease;
+            cursor: default;
+        }
+
+        .card.wrong {
+            background: #FFB6C1;
+            border-color: #FF6347;
+            animation: shake 0.5s ease;
+        }
+
+        .emoji-card {
+            font-size: 2.5em;
+        }
+
+        .word-card {
+            color: #667eea;
+            font-size: 1em;
+            flex-direction: column;
+        }
+
+        .word-card small {
+            color: #999;
+            font-size: 0.8em;
+        }
+
+        @keyframes matchPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        /* 游戏2: 拼写挑战 */
+        .spelling-game {
+            background: rgba(255,255,255,0.95);
+            border-radius: 30px;
+            padding: 30px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .level-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f8f8;
+            border-radius: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .level-info span {
+            font-weight: bold;
+            color: #f5576c;
+        }
+
+        .question-area {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .emoji-display {
+            font-size: 5em;
+            margin-bottom: 15px;
+            animation: bounce 1.5s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .hint-text {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .letter-slots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .letter-slot {
+            width: 45px;
+            height: 55px;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            background: #f9f9f9;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .letter-slot.filled {
+            border-color: #667eea;
+            background: #e8f0fe;
+        }
+
+        .letter-slot.correct {
+            border-color: #4CAF50;
+            background: #c8e6c9;
+            animation: correctPulse 0.5s ease;
+        }
+
+        .letter-slot.wrong {
+            border-color: #f44336;
+            background: #ffcdd2;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .keyboard {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 20px;
+        }
+
+        .key {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        .key:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+        }
+
+        .key:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .control-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.95em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #333;
+        }
+
+        .btn-secondary {
+            background: #4ecdc4;
+            color: white;
+        }
+
+        .btn-hint {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            display: none;
+            text-align: center;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .feedback.correct {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .feedback.wrong {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
+        .progress-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .dot.current {
+            background: #f5576c;
+            transform: scale(1.3);
+        }
+
+        .dot.completed {
+            background: #4CAF50;
+        }
+
+        /* 庆祝动画 */
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .confetti, .star {
+            position: absolute;
+            animation: fall 3s ease forwards;
+        }
+
+        .confetti {
+            width: 10px;
+            height: 10px;
+        }
+
+        .star {
+            font-size: 2em;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* 弹窗 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            max-width: 400px;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        .modal-content h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .modal-content p {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="logo">🌈 英语游戏中心</div>
+        <div class="nav-menu">
+            <button class="nav-btn active" onclick="showPage('home')">🏠 首页</button>
+            <button class="nav-btn" onclick="showPage('matching')">🎮 单词配对</button>
+            <button class="nav-btn" onclick="showPage('spelling')">🎯 拼写挑战</button>
+        </div>
+        <div class="total-score">🏆 总分: <span id="total-score">0</span></div>
+    </nav>
+
+    <!-- 首页 -->
+    <div id="home-page" class="page home-page active">
+        <h1 class="home-title">🌟 欢迎来到英语游戏中心 🌟</h1>
+        <p class="home-subtitle">选择你喜欢的游戏，开始学习英语吧！</p>
+
+        <div class="game-cards">
+            <div class="game-card" onclick="showPage('matching')">
+                <div class="game-icon">🎮</div>
+                <h3>单词配对</h3>
+                <p>把图片和英文单词配对<br>锻炼你的记忆力！</p>
+            </div>
+            <div class="game-card" onclick="showPage('spelling')">
+                <div class="game-icon">🎯</div>
+                <h3>拼写挑战</h3>
+                <p>看图拼单词<br>成为拼写小达人！</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 游戏1: 单词配对 -->
+    <div id="matching-page" class="page">
+        <div class="matching-game">
+            <div class="game-header">
+                <h2>🎮 单词配对游戏</h2>
+                <p>点击左侧图片，再点击右侧对应的英文单词</p>
+            </div>
+
+            <div class="score-board">
+                <div class="score-item">
+                    <div class="label">游戏得分</div>
+                    <div class="value" id="match-score">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="label">配对进度</div>
+                    <div class="value" id="match-progress">0/6</div>
+                </div>
+                <div class="score-item">
+                    <div class="label">用时</div>
+                    <div class="value" id="match-timer">00:00</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="match-progress-bar" style="width: 0%"></div>
+            </div>
+
+            <div class="game-area">
+                <div class="column">
+                    <div class="column-title">📷 图片</div>
+                    <div id="emoji-column"></div>
+                </div>
+                <div class="column">
+                    <div class="column-title">🔤 单词</div>
+                    <div id="word-column"></div>
+                </div>
+            </div>
+
+            <div class="control-btns">
+                <button class="btn btn-primary" onclick="initMatchingGame()">🔄 新游戏</button>
+                <button class="btn btn-secondary" onclick="speak('Click a picture, then click the matching word')">🔊 听说明</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 游戏2: 拼写挑战 -->
+    <div id="spelling-page" class="page">
+        <div class="spelling-game">
+            <div class="game-header">
+                <h2>🎯 拼写挑战</h2>
+                <p>根据图片提示，拼出正确的英文单词</p>
+            </div>
+
+            <div class="level-info">
+                <span>关卡: <span id="spell-level">1</span>/10</span>
+                <span>游戏得分: <span id="spell-score">0</span></span>
+                <span>连对: <span id="spell-streak">0</span></span>
+            </div>
+
+            <div class="progress-dots" id="spell-progress-dots"></div>
+
+            <div class="question-area">
+                <div class="emoji-display" id="spell-emoji">🍎</div>
+                <div class="hint-text" id="spell-hint">这是一种水果</div>
+                <div class="letter-slots" id="spell-slots"></div>
+            </div>
+
+            <div class="keyboard" id="spell-keyboard"></div>
+
+            <div class="feedback" id="spell-feedback"></div>
+
+            <div class="control-btns">
+                <button class="btn btn-secondary" onclick="speakWord()">🔊 听发音</button>
+                <button class="btn btn-hint" onclick="showSpellHint()">💡 提示 (-1分)</button>
+                <button class="btn btn-primary" onclick="clearLetters()">🔄 清除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 庆祝层 -->
+    <div class="celebration" id="celebration"></div>
+
+    <!-- 弹窗 -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">🎉 恭喜你!</h2>
+            <p id="modal-text">游戏完成!</p>
+            <button class="btn btn-primary" onclick="closeModal()">再玩一次</button>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 全局数据 ====================
+        const wordPairs = [
+            { emoji: '🍎', word: 'Apple', cn: '苹果' },
+            { emoji: '🐱', word: 'Cat', cn: '小猫' },
+            { emoji: '🐕', word: 'Dog', cn: '小狗' },
+            { emoji: '🌞', word: 'Sun', cn: '太阳' },
+            { emoji: '🌙', word: 'Moon', cn: '月亮' },
+            { emoji: '⭐', word: 'Star', cn: '星星' }
+        ];
+
+        const spellingWords = [
+            { emoji: '🍎', word: 'APPLE', cn: '苹果', hint: '这是一种红色的水果' },
+            { emoji: '🐱', word: 'CAT', cn: '小猫', hint: '它会喵喵叫' },
+            { emoji: '🐕', word: 'DOG', cn: '小狗', hint: '人类最好的朋友' },
+            { emoji: '🌞', word: 'SUN', cn: '太阳', hint: '白天挂在天上的' },
+            { emoji: '🌙', word: 'MOON', cn: '月亮', hint: '晚上挂在天上的' },
+            { emoji: '⭐', word: 'STAR', cn: '星星', hint: '夜晚天空中闪烁的' },
+            { emoji: '🐘', word: 'ELEPHANT', cn: '大象', hint: '它有一个长鼻子' },
+            { emoji: '🦋', word: 'BUTTERFLY', cn: '蝴蝶', hint: '会飞的花虫子' },
+            { emoji: '🌈', word: 'RAINBOW', cn: '彩虹', hint: '雨后有七种颜色' },
+            { emoji: '🎈', word: 'BALLOON', cn: '气球', hint: '可以飞起来的玩具' }
+        ];
+
+        let totalScore = 0;
+
+        // ==================== 页面切换 ====================
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+            if (page === 'home') {
+                document.getElementById('home-page').classList.add('active');
+                document.querySelectorAll('.nav-btn')[0].classList.add('active');
+            } else if (page === 'matching') {
+                document.getElementById('matching-page').classList.add('active');
+                document.querySelectorAll('.nav-btn')[1].classList.add('active');
+                initMatchingGame();
+            } else if (page === 'spelling') {
+                document.getElementById('spelling-page').classList.add('active');
+                document.querySelectorAll('.nav-btn')[2].classList.add('active');
+                initSpellingGame();
+            }
+        }
+
+        function updateTotalScore() {
+            document.getElementById('total-score').textContent = totalScore;
+        }
+
+        // ==================== 游戏1: 单词配对 ====================
+        let matchSelectedEmoji = null;
+        let matchSelectedWord = null;
+        let matchScore = 0;
+        let matchCount = 0;
+        let matchTimer = null;
+        let matchSeconds = 0;
+
+        function initMatchingGame() {
+            matchSelectedEmoji = null;
+            matchSelectedWord = null;
+            matchScore = 0;
+            matchCount = 0;
+            matchSeconds = 0;
+            updateMatchUI();
+
+            if (matchTimer) clearInterval(matchTimer);
+            matchTimer = setInterval(() => {
+                matchSeconds++;
+                const mins = Math.floor(matchSeconds / 60).toString().padStart(2, '0');
+                const secs = (matchSeconds % 60).toString().padStart(2, '0');
+                document.getElementById('match-timer').textContent = `${mins}:${secs}`;
+            }, 1000);
+
+            const shuffledEmojis = shuffle([...wordPairs]);
+            const shuffledWords = shuffle([...wordPairs]);
+
+            const emojiCol = document.getElementById('emoji-column');
+            const wordCol = document.getElementById('word-column');
+            emojiCol.innerHTML = '';
+            wordCol.innerHTML = '';
+
+            shuffledEmojis.forEach(pair => {
+                const card = document.createElement('div');
+                card.className = 'card emoji-card';
+                card.textContent = pair.emoji;
+                card.dataset.word = pair.word;
+                card.onclick = () => selectEmoji(card);
+                emojiCol.appendChild(card);
+            });
+
+            shuffledWords.forEach(pair => {
+                const card = document.createElement('div');
+                card.className = 'card word-card';
+                card.innerHTML = `${pair.word}<br><small>${pair.cn}</small>`;
+                card.dataset.word = pair.word;
+                card.onclick = () => selectWord(card);
+                wordCol.appendChild(card);
+            });
+        }
+
+        function selectEmoji(card) {
+            if (card.classList.contains('matched')) return;
+
+            document.querySelectorAll('#emoji-column .card').forEach(c => {
+                if (c !== card) c.classList.remove('selected');
+            });
+
+            if (matchSelectedEmoji === card) {
+                card.classList.remove('selected');
+                matchSelectedEmoji = null;
+            } else {
+                card.classList.add('selected');
+                matchSelectedEmoji = card;
+                checkMatchPair();
+            }
+        }
+
+        function selectWord(card) {
+            if (card.classList.contains('matched')) return;
+
+            document.querySelectorAll('#word-column .card').forEach(c => {
+                if (c !== card) c.classList.remove('selected');
+            });
+
+            if (matchSelectedWord === card) {
+                card.classList.remove('selected');
+                matchSelectedWord = null;
+            } else {
+                card.classList.add('selected');
+                matchSelectedWord = card;
+                checkMatchPair();
+            }
+        }
+
+        function checkMatchPair() {
+            if (matchSelectedEmoji && matchSelectedWord) {
+                if (matchSelectedEmoji.dataset.word === matchSelectedWord.dataset.word) {
+                    matchSelectedEmoji.classList.remove('selected');
+                    matchSelectedWord.classList.remove('selected');
+                    matchSelectedEmoji.classList.add('matched');
+                    matchSelectedWord.classList.add('matched');
+
+                    matchScore += 10;
+                    matchCount++;
+                    updateMatchUI();
+                    createConfetti(5);
+                    speak('Great! ' + matchSelectedEmoji.dataset.word);
+
+                    matchSelectedEmoji = null;
+                    matchSelectedWord = null;
+
+                    if (matchCount === wordPairs.length) {
+                        setTimeout(() => {
+                            clearInterval(matchTimer);
+                            totalScore += matchScore;
+                            updateTotalScore();
+                            const mins = Math.floor(matchSeconds / 60);
+                            const secs = matchSeconds % 60;
+                            const timeStr = mins > 0 ? `${mins}分${secs}秒` : `${secs}秒`;
+                            showModal('🎉 配对完成！', `得分: ${matchScore} | 用时: ${timeStr}`);
+                        }, 500);
+                    }
+                } else {
+                    matchSelectedEmoji.classList.add('wrong');
+                    matchSelectedWord.classList.add('wrong');
+
+                    setTimeout(() => {
+                        matchSelectedEmoji.classList.remove('selected', 'wrong');
+                        matchSelectedWord.classList.remove('selected', 'wrong');
+                        matchSelectedEmoji = null;
+                        matchSelectedWord = null;
+                    }, 500);
+
+                    matchScore = Math.max(0, matchScore - 2);
+                    updateMatchUI();
+                }
+            }
+        }
+
+        function updateMatchUI() {
+            document.getElementById('match-score').textContent = matchScore;
+            document.getElementById('match-progress').textContent = `${matchCount}/${wordPairs.length}`;
+            document.getElementById('match-progress-bar').style.width = `${(matchCount / wordPairs.length) * 100}%`;
+        }
+
+        // ==================== 游戏2: 拼写挑战 ====================
+        let spellLevel = 0;
+        let spellScore = 0;
+        let spellStreak = 0;
+        let currentSpellWord = '';
+        let filledSlots = [];
+
+        function initSpellingGame() {
+            spellLevel = 0;
+            spellScore = 0;
+            spellStreak = 0;
+            createSpellDots();
+            loadSpellLevel();
+        }
+
+        function createSpellDots() {
+            const container = document.getElementById('spell-progress-dots');
+            container.innerHTML = '';
+            for (let i = 0; i < spellingWords.length; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                if (i === 0) dot.classList.add('current');
+                container.appendChild(dot);
+            }
+        }
+
+        function updateSpellDots() {
+            document.querySelectorAll('#spell-progress-dots .dot').forEach((dot, i) => {
+                dot.classList.remove('current', 'completed');
+                if (i === spellLevel) dot.classList.add('current');
+                if (i < spellLevel) dot.classList.add('completed');
+            });
+        }
+
+        function loadSpellLevel() {
+            if (spellLevel >= spellingWords.length) {
+                totalScore += spellScore;
+                updateTotalScore();
+                showModal('🏆 挑战完成！', `最终得分: ${spellScore}分\n你太棒了！`);
+                return;
+            }
+
+            const wordData = spellingWords[spellLevel];
+            currentSpellWord = wordData.word;
+            filledSlots = new Array(currentSpellWord.length).fill('');
+
+            document.getElementById('spell-emoji').textContent = wordData.emoji;
+            document.getElementById('spell-hint').textContent = `${wordData.hint} (${wordData.cn})`;
+            document.getElementById('spell-level').textContent = spellLevel + 1;
+            document.getElementById('spell-score').textContent = spellScore;
+            document.getElementById('spell-streak').textContent = spellStreak;
+            document.getElementById('spell-feedback').classList.remove('show');
+
+            createSpellSlots();
+            createSpellKeyboard();
+            updateSpellDots();
+            speak(currentSpellWord);
+        }
+
+        function createSpellSlots() {
+            const container = document.getElementById('spell-slots');
+            container.innerHTML = '';
+            for (let i = 0; i < currentSpellWord.length; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'letter-slot';
+                slot.onclick = () => removeSlotLetter(i);
+                container.appendChild(slot);
+            }
+        }
+
+        function createSpellKeyboard() {
+            const container = document.getElementById('spell-keyboard');
+            container.innerHTML = '';
+
+            const letters = currentSpellWord.split('');
+            const extras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+                .filter(l => !letters.includes(l))
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 10);
+
+            const allLetters = [...letters, ...extras].sort(() => Math.random() - 0.5);
+
+            allLetters.forEach(letter => {
+                const key = document.createElement('button');
+                key.className = 'key';
+                key.textContent = letter;
+                key.onclick = () => addSlotLetter(letter);
+                container.appendChild(key);
+            });
+        }
+
+        function addSlotLetter(letter) {
+            const emptyIdx = filledSlots.findIndex(s => s === '');
+            if (emptyIdx === -1) return;
+
+            filledSlots[emptyIdx] = letter;
+            const slots = document.querySelectorAll('#spell-slots .letter-slot');
+            slots[emptyIdx].textContent = letter;
+            slots[emptyIdx].classList.add('filled');
+
+            if (!filledSlots.includes('')) {
+                checkSpellAnswer();
+            }
+        }
+
+        function removeSlotLetter(index) {
+            if (filledSlots[index] === '') return;
+            filledSlots[index] = '';
+            const slots = document.querySelectorAll('#spell-slots .letter-slot');
+            slots[index].textContent = '';
+            slots[index].classList.remove('filled', 'correct', 'wrong');
+        }
+
+        function clearLetters() {
+            filledSlots = new Array(currentSpellWord.length).fill('');
+            createSpellSlots();
+            document.getElementById('spell-feedback').classList.remove('show');
+        }
+
+        function checkSpellAnswer() {
+            const answer = filledSlots.join('');
+            const slots = document.querySelectorAll('#spell-slots .letter-slot');
+            const feedback = document.getElementById('spell-feedback');
+
+            if (answer === currentSpellWord) {
+                slots.forEach(s => s.classList.add('correct'));
+                feedback.textContent = '🎉 太棒了！拼写正确！';
+                feedback.className = 'feedback correct show';
+                spellScore += 10 + spellStreak * 2;
+                spellStreak++;
+                createConfetti(10);
+                speak('Excellent! ' + currentSpellWord);
+
+                setTimeout(() => {
+                    spellLevel++;
+                    loadSpellLevel();
+                }, 1500);
+            } else {
+                slots.forEach(s => s.classList.add('wrong'));
+                feedback.textContent = '❌ 不对哦，再试试看！';
+                feedback.className = 'feedback wrong show';
+                spellStreak = 0;
+                spellScore = Math.max(0, spellScore - 2);
+                document.getElementById('spell-score').textContent = spellScore;
+                document.getElementById('spell-streak').textContent = spellStreak;
+
+                setTimeout(() => slots.forEach(s => s.classList.remove('wrong')), 1000);
+            }
+        }
+
+        function showSpellHint() {
+            const emptyIdx = filledSlots.findIndex(s => s === '');
+            if (emptyIdx === -1) return;
+
+            addSlotLetter(currentSpellWord[emptyIdx]);
+            spellScore = Math.max(0, spellScore - 1);
+            document.getElementById('spell-score').textContent = spellScore;
+        }
+
+        function speakWord() {
+            speak(currentSpellWord);
+        }
+
+        // ==================== 工具函数 ====================
+        function shuffle(array) {
+            const newArr = [...array];
+            for (let i = newArr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+            }
+            return newArr;
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'en-US';
+                u.rate = 0.75;
+                speechSynthesis.speak(u);
+            }
+        }
+
+        function createConfetti(count) {
+            const container = document.getElementById('celebration');
+            const items = ['⭐', '🌟', '✨', '🎉', '🎊', '🎈'];
+            const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#2196f3', '#4caf50', '#ffeb3b', '#ff9800'];
+
+            for (let i = 0; i < count * 3; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.className = Math.random() > 0.5 ? 'star' : 'confetti';
+                    el.textContent = items[Math.floor(Math.random() * items.length)];
+                    if (el.className === 'confetti') {
+                        el.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    }
+                    el.style.left = Math.random() * 100 + '%';
+                    el.style.animationDelay = Math.random() * 0.5 + 's';
+                    el.style.animationDuration = (2 + Math.random() * 2) + 's';
+                    container.appendChild(el);
+                    setTimeout(() => el.remove(), 4000);
+                }, i * 50);
+            }
+        }
+
+        function showModal(title, text) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-text').textContent = text;
+            document.getElementById('modal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+            if (document.getElementById('matching-page').classList.contains('active')) {
+                initMatchingGame();
+            } else if (document.getElementById('spelling-page').classList.contains('active')) {
+                initSpellingGame();
+            }
+        }
+
+        // 键盘支持
+        document.addEventListener('keydown', (e) => {
+            if (!document.getElementById('spelling-page').classList.contains('active')) return;
+
+            const letter = e.key.toUpperCase();
+            if (/[A-Z]/.test(letter)) {
+                const key = Array.from(document.querySelectorAll('#spell-keyboard .key'))
+                    .find(k => k.textContent === letter && !k.disabled);
+                if (key) key.click();
+            } else if (e.key === 'Backspace') {
+                const lastFilled = filledSlots.map((s, i) => s ? i : -1).filter(i => i !== -1).pop();
+                if (lastFilled !== undefined) removeSlotLetter(lastFilled);
+            }
+        });
+    </script>
+</body>
+</html>

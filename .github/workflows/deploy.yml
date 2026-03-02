@@ -1,0 +1,60 @@
+name: Deploy to Tencent COS
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 检出代码
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 设置 Node.js（如果需要构建）
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    # 创建 index.html（将主文件复制为入口）
+    - name: Prepare index.html
+      run: |
+        cp 英语游戏中心.html index.html
+
+    # 安装 coscmd
+    - name: Install coscmd
+      run: |
+        pip install coscmd
+
+    # 配置腾讯云 COS
+    - name: Configure COS
+      run: |
+        coscmd config -a ${{ secrets.TENCENT_SECRET_ID }} \
+                      -s ${{ secrets.TENCENT_SECRET_KEY }} \
+                      -b ${{ secrets.TENCENT_BUCKET }} \
+                      -r ${{ secrets.TENCENT_REGION }}
+
+    # 删除旧文件
+    - name: Clean old files
+      run: |
+        coscmd delete -r -f / || true
+
+    # 上传新文件到 COS
+    - name: Upload to COS
+      run: |
+        coscmd upload -r ./ / --ignore "./.git/*,./.github/*,./README.md,./部署指南.md,./setup.sh"
+
+    # 清理临时文件
+    - name: Cleanup
+      run: |
+        rm -f index.html
+
+    # 部署成功通知
+    - name: Deploy Success
+      run: |
+        echo "🎉 部署成功！"
+        echo "访问地址: https://${{ secrets.TENCENT_BUCKET }}.cos-website.${{ secrets.TENCENT_REGION }}.myqcloud.com"
